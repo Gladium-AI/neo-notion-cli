@@ -1,0 +1,56 @@
+# App Structure - neo-notion-cli
+# Last updated: 2026-03-18
+
+## Overview
+Agent-first CLI that mirrors the Notion public API 1:1.
+Binary: `notion`
+Syntax: `notion <resource> <verb> [flags]`
+Target API version: 2026-03-11
+
+## Repositories
+- Local: /Users/paolo/Repos/neo-notion-cli
+
+## Architecture
+- cmd/              — Cobra command tree (one package per resource group)
+- cmd/root.go       — Root command, global flags, search command, shared helpers
+- cmd/auth/         — OAuth token commands (create, refresh, introspect, revoke)
+- cmd/users/        — User commands (list, get, me)
+- cmd/pages/        — Page commands (create, get, update, move, property, markdown)
+- cmd/blocks/       — Block commands (append, get, children, update, delete)
+- cmd/databases/    — Database commands (create, get, update)
+- cmd/datasources/  — Data source commands (create, get, update, query, templates)
+- cmd/comments/     — Comment commands (create, get, list)
+- cmd/fileuploads/  — File upload commands (create, send, complete, get, list)
+- cmd/webhooks/     — Webhook helper commands (listen, events)
+- internal/config/  — Layered config (viper): flags > env > config file
+- internal/httpx/   — Retryable HTTP client with Notion headers and error handling
+- internal/notion/  — Typed Notion API client (single entry point for all endpoints)
+- internal/render/  — Output formatting (json, yaml, raw, pretty)
+- internal/agents/  — Agent I/O utilities (stdin, file body loading, JSON validation)
+- main.go           — Entry point
+
+## Key Dependencies
+- github.com/spf13/cobra         — Command tree
+- github.com/spf13/viper         — Layered config
+- github.com/hashicorp/go-retryablehttp — Retry + rate limit handling
+- github.com/rs/zerolog           — Structured logging
+- github.com/itchyny/gojq         — jq-like --select support
+- github.com/google/uuid          — ID validation
+- github.com/charmbracelet/glamour — Markdown pretty-printing (optional)
+- gopkg.in/yaml.v3                — YAML output
+- golang.org/x/oauth2             — OAuth transport
+
+## Environment Variables
+- NOTION_AUTH_TOKEN / NOTION_TOKEN — Bearer token
+- NOTION_CLIENT_ID                — OAuth client ID
+- NOTION_CLIENT_SECRET            — OAuth client secret
+
+## Config File
+- ~/.notion/notion.yaml or ./notion.yaml
+
+## Notes
+- All mutating commands support --body and --body-file for raw JSON passthrough
+- All read commands support --select (jq-like) and pagination flags
+- Output defaults to JSON; --yaml, --raw, --pretty available
+- The data-sources commands reflect the 2025-09-03 API split from databases
+- Webhooks listen is a local HTTP server, not an API wrapper
