@@ -28,6 +28,7 @@ type Config struct {
 	Timeout        time.Duration
 	Retry          int
 	OutputFormat   string // json, yaml, raw, pretty
+	Full           bool   // skip normalization, show full API response
 	Quiet          bool
 	IdempotencyKey string
 	ExtraHeaders   map[string]string
@@ -83,6 +84,9 @@ func Load() (*Config, error) {
 		OutputFile:     viper.GetString("output"),
 		Stdin:          viper.GetBool("stdin"),
 	}
+
+	// Full mode skips normalization.
+	cfg.Full = viper.GetBool("full")
 
 	// Resolve output format from convenience flags.
 	switch {

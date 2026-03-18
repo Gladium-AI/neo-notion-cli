@@ -1,4 +1,6 @@
 // Package render handles output formatting: JSON, YAML, raw, and pretty.
+// By default, output is normalized (lean/agent-friendly). Use --raw for
+// exact API bytes or --full for formatted but un-normalized JSON.
 package render
 
 import (
@@ -18,13 +20,26 @@ func Output(cfg *config.Config, data []byte) error {
 		return nil
 	}
 
+	// Raw mode: exact API bytes, no normalization, no formatting.
+	if cfg.OutputFormat == "raw" {
+		w := writer(cfg)
+		return outputRaw(w, data)
+	}
+
+	// Normalize unless --full is set.
+	if !cfg.Full {
+		var err error
+		data, err = Normalize(data)
+		if err != nil {
+			return fmt.Errorf("normalize: %w", err)
+		}
+	}
+
 	w := writer(cfg)
 
 	switch cfg.OutputFormat {
 	case "yaml":
 		return outputYAML(w, data)
-	case "raw":
-		return outputRaw(w, data)
 	case "pretty":
 		return outputPretty(w, data)
 	default: // json
