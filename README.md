@@ -1,5 +1,8 @@
 # neo-notion-cli
 
+[![Go](https://img.shields.io/badge/Go-1.25+-00ADD8?logo=go&logoColor=white)](https://go.dev)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+
 A Notion API CLI built for AI agents. Ships normalized, context-efficient output by default so agents can read and manipulate Notion workspaces without blowing their context window.
 
 Covers the full Notion API surface (v2026-03-11) — pages, databases, data sources, blocks, comments, file uploads, users, search, OAuth, webhooks — in a single binary.
