@@ -12,6 +12,7 @@ import (
 	"github.com/paoloanzn/neo-notion-cli/internal/cmdutil"
 	"github.com/paoloanzn/neo-notion-cli/internal/config"
 	"github.com/paoloanzn/neo-notion-cli/internal/notion"
+	"github.com/paoloanzn/neo-notion-cli/internal/version"
 
 	"github.com/paoloanzn/neo-notion-cli/cmd/auth"
 	"github.com/paoloanzn/neo-notion-cli/cmd/blocks"
@@ -33,6 +34,7 @@ Designed for AI agents and human operators alike.
 Syntax: notion <resource> <verb> [flags]
 
 API version: 2026-03-11`,
+	Version:       version.String(),
 	SilenceUsage:  true,
 	SilenceErrors: true,
 }
