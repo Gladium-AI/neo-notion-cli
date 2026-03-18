@@ -1,6 +1,6 @@
 # Binaries
-notion
-neo-notion-cli
+/notion
+/neo-notion-cli
 *.exe
 *.exe~
 *.dll
@@ -35,8 +35,8 @@ Thumbs.db
 credentials.json
 
 # Config (user-local)
-notion.yaml
-notion.yml
+/notion.yaml
+/notion.yml
 
 # Go
 vendor/
