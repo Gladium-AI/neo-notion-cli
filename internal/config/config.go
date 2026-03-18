@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"strings"
 	"time"
 
 	"github.com/spf13/viper"
@@ -35,21 +36,52 @@ type Config struct {
 	Stdin          bool
 }
 
+// getStr returns the first non-empty string from viper for the given keys.
+// This lets YAML config files use underscores (auth_token) while cobra
+// flags use hyphens (--auth-token) — both resolve correctly.
+func getStr(keys ...string) string {
+	for _, k := range keys {
+		if v := viper.GetString(k); v != "" {
+			return v
+		}
+	}
+	return ""
+}
+
+// getDur returns the first non-zero duration from viper for the given keys.
+func getDur(keys ...string) time.Duration {
+	for _, k := range keys {
+		if v := viper.GetDuration(k); v != 0 {
+			return v
+		}
+	}
+	return 0
+}
+
+// alsoUnderscore returns both "some-key" and "some_key" variants.
+func alsoUnderscore(key string) []string {
+	alt := strings.ReplaceAll(key, "-", "_")
+	if alt == key {
+		return []string{key}
+	}
+	return []string{key, alt}
+}
+
 // Load reads config from viper (flags + env + file) and returns a Config.
 func Load() (*Config, error) {
 	cfg := &Config{
-		AuthToken:     viper.GetString("auth-token"),
-		ClientID:      viper.GetString("client-id"),
-		ClientSecret:  viper.GetString("client-secret"),
-		NotionVersion: viper.GetString("notion-version"),
-		BaseURL:       viper.GetString("base-url"),
-		Timeout:       viper.GetDuration("timeout"),
-		Retry:         viper.GetInt("retry"),
-		Quiet:         viper.GetBool("quiet"),
-		IdempotencyKey: viper.GetString("idempotency-key"),
-		InputFile:     viper.GetString("input"),
-		OutputFile:    viper.GetString("output"),
-		Stdin:         viper.GetBool("stdin"),
+		AuthToken:      getStr(alsoUnderscore("auth-token")...),
+		ClientID:       getStr(alsoUnderscore("client-id")...),
+		ClientSecret:   getStr(alsoUnderscore("client-secret")...),
+		NotionVersion:  getStr(alsoUnderscore("notion-version")...),
+		BaseURL:        getStr(alsoUnderscore("base-url")...),
+		Timeout:        getDur(alsoUnderscore("timeout")...),
+		Retry:          viper.GetInt("retry"),
+		Quiet:          viper.GetBool("quiet"),
+		IdempotencyKey: getStr(alsoUnderscore("idempotency-key")...),
+		InputFile:      viper.GetString("input"),
+		OutputFile:     viper.GetString("output"),
+		Stdin:          viper.GetBool("stdin"),
 	}
 
 	// Resolve output format from convenience flags.
@@ -97,6 +129,7 @@ func InitViper() {
 	_ = viper.BindEnv("auth-token", "NOTION_AUTH_TOKEN", "NOTION_TOKEN")
 	_ = viper.BindEnv("client-id", "NOTION_CLIENT_ID")
 	_ = viper.BindEnv("client-secret", "NOTION_CLIENT_SECRET")
+
 
 	// Config file search.
 	if home, err := os.UserHomeDir(); err == nil {

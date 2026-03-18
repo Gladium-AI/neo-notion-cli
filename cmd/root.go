@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/rs/zerolog"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 
@@ -44,7 +45,10 @@ var searchCmd = &cobra.Command{
 }
 
 func init() {
-	cobra.OnInitialize(config.InitViper)
+	// Default log level is warn; --verbose enables debug.
+	zerolog.SetGlobalLevel(zerolog.WarnLevel)
+
+	cobra.OnInitialize(config.InitViper, initLogLevel)
 	cmdutil.SetRootCmd(rootCmd)
 
 	pf := rootCmd.PersistentFlags()
@@ -71,6 +75,7 @@ func init() {
 	pf.Bool("paginate", false, "Auto-paginate through all results")
 	pf.String("body", "", "Raw JSON body for mutating requests")
 	pf.String("body-file", "", "Path to JSON file for request body")
+	pf.BoolP("verbose", "v", false, "Enable debug logging")
 
 	// Bind all persistent flags to viper.
 	_ = viper.BindPFlag("auth-token", pf.Lookup("auth-token"))
@@ -95,7 +100,7 @@ func init() {
 	searchCmd.Flags().String("sort-timestamp", "", "Sort by timestamp field (last_edited_time)")
 	searchCmd.Flags().String("sort-direction", "", "Sort direction (ascending|descending)")
 	searchCmd.Flags().String("filter-property", "", "Filter property name (object)")
-	searchCmd.Flags().String("filter-value", "", "Filter value (page|data_source|database)")
+	searchCmd.Flags().String("filter-value", "", "Filter value (page|data_source)")
 	searchCmd.Flags().String("start-cursor", "", "Pagination cursor")
 	searchCmd.Flags().Int("page-size", 0, "Results per page")
 
@@ -128,6 +133,13 @@ func NewClientFromConfig() (*notion.Client, *config.Config, error) {
 // OutputResult handles --select and renders the final output.
 func OutputResult(cfg *config.Config, data []byte) error {
 	return cmdutil.OutputResult(cfg, data)
+}
+
+// initLogLevel sets zerolog level from the --verbose flag.
+func initLogLevel() {
+	if v, _ := rootCmd.PersistentFlags().GetBool("verbose"); v {
+		zerolog.SetGlobalLevel(zerolog.DebugLevel)
+	}
 }
 
 func runSearch(c *cobra.Command, args []string) error {
