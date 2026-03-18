@@ -16,6 +16,7 @@ func Cmd() *cobra.Command {
 	}
 
 	authCmd.AddCommand(tokenCmd())
+	authCmd.AddCommand(loginCmd())
 	return authCmd
 }
 

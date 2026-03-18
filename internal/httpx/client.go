@@ -47,6 +47,11 @@ func New(cfg *config.Config) *Client {
 	}
 }
 
+// SetAuthToken overrides the bearer token on this client.
+func (c *Client) SetAuthToken(token string) {
+	c.cfg.AuthToken = token
+}
+
 // NotionError represents an error response from the Notion API.
 type NotionError struct {
 	Status  int    `json:"status"`
