@@ -3,7 +3,7 @@ MODULE   := github.com/paoloanzn/neo-notion-cli
 VERSION  ?= $(shell git describe --tags --always --dirty 2>/dev/null || echo "dev")
 COMMIT   := $(shell git rev-parse --short HEAD 2>/dev/null || echo "unknown")
 DATE     := $(shell date -u +%Y-%m-%dT%H:%M:%SZ)
-GOBIN    ?= $(shell go env GOPATH)/bin
+GOBIN    ?= $(HOME)/.local/bin
 
 LDFLAGS  := -s -w \
 	-X $(MODULE)/internal/version.Version=$(VERSION) \
@@ -18,8 +18,9 @@ build:
 	go build -ldflags "$(LDFLAGS)" -o bin/$(BINARY) .
 	@echo "Built bin/$(BINARY)"
 
-## install: Build and install the binary to GOBIN ($(GOBIN))
+## install: Build and install the binary to ~/.local/bin (override with GOBIN=)
 install:
+	@mkdir -p $(GOBIN)
 	go build -ldflags "$(LDFLAGS)" -o $(GOBIN)/$(BINARY) .
 	@echo "Installed $(GOBIN)/$(BINARY)"
 
