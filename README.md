@@ -44,16 +44,26 @@ jq expressions via `--select` operate on the normalized output, so agents can do
 
 ## Install
 
+**One-liner (Linux / macOS):**
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/Gladium-AI/neo-notion-cli/main/install.sh | sh
+```
+
+Downloads the latest release for your OS/arch and installs to `~/.local/bin`.
+
+**Go install:**
+
 ```bash
 go install github.com/paoloanzn/neo-notion-cli@latest
 ```
 
-Or build from source:
+**Build from source:**
 
 ```bash
-git clone https://github.com/paoloanzn/neo-notion-cli.git
+git clone https://github.com/Gladium-AI/neo-notion-cli.git
 cd neo-notion-cli
-go build -o notion .
+make install   # installs to ~/.local/bin
 ```
 
 ## Authentication
