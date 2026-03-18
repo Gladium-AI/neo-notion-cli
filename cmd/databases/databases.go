@@ -7,8 +7,8 @@ import (
 
 	"github.com/spf13/cobra"
 
-	"github.com/paoloanzn/neo-notion-cli/cmd"
 	"github.com/paoloanzn/neo-notion-cli/internal/agents"
+	"github.com/paoloanzn/neo-notion-cli/internal/cmdutil"
 )
 
 // Cmd returns the `databases` parent command with its subcommands.
@@ -49,7 +49,7 @@ func createCmd() *cobra.Command {
 }
 
 func runCreate(c *cobra.Command, args []string) error {
-	client, cfg, err := cmd.NewClientFromConfig()
+	client, cfg, err := cmdutil.NewClientFromConfig()
 	if err != nil {
 		return err
 	}
@@ -102,7 +102,7 @@ func runCreate(c *cobra.Command, args []string) error {
 	if err != nil {
 		return err
 	}
-	return cmd.OutputResult(cfg, data)
+	return cmdutil.OutputResult(cfg, data)
 }
 
 // --- get ---
@@ -120,7 +120,7 @@ func getCmd() *cobra.Command {
 }
 
 func runGet(c *cobra.Command, args []string) error {
-	client, cfg, err := cmd.NewClientFromConfig()
+	client, cfg, err := cmdutil.NewClientFromConfig()
 	if err != nil {
 		return err
 	}
@@ -131,7 +131,7 @@ func runGet(c *cobra.Command, args []string) error {
 	if err != nil {
 		return err
 	}
-	return cmd.OutputResult(cfg, data)
+	return cmdutil.OutputResult(cfg, data)
 }
 
 // --- update ---
@@ -160,7 +160,7 @@ func updateCmd() *cobra.Command {
 }
 
 func runUpdate(c *cobra.Command, args []string) error {
-	client, cfg, err := cmd.NewClientFromConfig()
+	client, cfg, err := cmdutil.NewClientFromConfig()
 	if err != nil {
 		return err
 	}
@@ -227,7 +227,7 @@ func runUpdate(c *cobra.Command, args []string) error {
 	if err != nil {
 		return err
 	}
-	return cmd.OutputResult(cfg, data)
+	return cmdutil.OutputResult(cfg, data)
 }
 
 // --- helpers ---

@@ -5,7 +5,7 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 
-	"github.com/paoloanzn/neo-notion-cli/cmd"
+	"github.com/paoloanzn/neo-notion-cli/internal/cmdutil"
 )
 
 // Cmd returns the `auth` parent command with all subcommands attached.
@@ -64,7 +64,7 @@ func createCmd() *cobra.Command {
 }
 
 func runCreate(c *cobra.Command, args []string) error {
-	client, cfg, err := cmd.NewClientFromConfig()
+	client, cfg, err := cmdutil.NewClientFromConfig()
 	if err != nil {
 		return err
 	}
@@ -86,7 +86,7 @@ func runCreate(c *cobra.Command, args []string) error {
 	if err != nil {
 		return err
 	}
-	return cmd.OutputResult(cfg, data)
+	return cmdutil.OutputResult(cfg, data)
 }
 
 // --- notion auth token refresh ---
@@ -105,7 +105,7 @@ func refreshCmd() *cobra.Command {
 }
 
 func runRefresh(c *cobra.Command, args []string) error {
-	client, cfg, err := cmd.NewClientFromConfig()
+	client, cfg, err := cmdutil.NewClientFromConfig()
 	if err != nil {
 		return err
 	}
@@ -124,7 +124,7 @@ func runRefresh(c *cobra.Command, args []string) error {
 	if err != nil {
 		return err
 	}
-	return cmd.OutputResult(cfg, data)
+	return cmdutil.OutputResult(cfg, data)
 }
 
 // --- notion auth token introspect ---
@@ -142,7 +142,7 @@ func introspectCmd() *cobra.Command {
 }
 
 func runIntrospect(c *cobra.Command, args []string) error {
-	client, cfg, err := cmd.NewClientFromConfig()
+	client, cfg, err := cmdutil.NewClientFromConfig()
 	if err != nil {
 		return err
 	}
@@ -158,7 +158,7 @@ func runIntrospect(c *cobra.Command, args []string) error {
 	if err != nil {
 		return err
 	}
-	return cmd.OutputResult(cfg, data)
+	return cmdutil.OutputResult(cfg, data)
 }
 
 // --- notion auth token revoke ---
@@ -176,7 +176,7 @@ func revokeCmd() *cobra.Command {
 }
 
 func runRevoke(c *cobra.Command, args []string) error {
-	client, cfg, err := cmd.NewClientFromConfig()
+	client, cfg, err := cmdutil.NewClientFromConfig()
 	if err != nil {
 		return err
 	}
@@ -192,5 +192,5 @@ func runRevoke(c *cobra.Command, args []string) error {
 	if err != nil {
 		return err
 	}
-	return cmd.OutputResult(cfg, data)
+	return cmdutil.OutputResult(cfg, data)
 }
