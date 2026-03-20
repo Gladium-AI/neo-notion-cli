@@ -26,15 +26,6 @@ func Output(cfg *config.Config, data []byte) error {
 		return outputRaw(w, data)
 	}
 
-	// Normalize unless --full is set.
-	if !cfg.Full {
-		var err error
-		data, err = Normalize(data)
-		if err != nil {
-			return fmt.Errorf("normalize: %w", err)
-		}
-	}
-
 	w := writer(cfg)
 
 	switch cfg.OutputFormat {
