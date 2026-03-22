@@ -5,7 +5,9 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"mime"
 	"mime/multipart"
+	"net/textproto"
 	"os"
 	"path/filepath"
 	"strconv"
@@ -114,6 +116,7 @@ func sendCmd() *cobra.Command {
 	_ = c.MarkFlagRequired("file-upload-id")
 	c.Flags().String("file", "", "Path to the file to send")
 	_ = c.MarkFlagRequired("file")
+	c.Flags().String("content-type", "", "MIME type of the file (auto-detected from extension if omitted)")
 	c.Flags().Int("part-number", 0, "Part number for multi-part uploads")
 	return c
 }
@@ -126,6 +129,7 @@ func runSend(c *cobra.Command, args []string) error {
 
 	fileUploadID, _ := c.Flags().GetString("file-upload-id")
 	filePath, _ := c.Flags().GetString("file")
+	ctOverride, _ := c.Flags().GetString("content-type")
 	partNumber, _ := c.Flags().GetInt("part-number")
 
 	// Read the file.
@@ -145,10 +149,26 @@ func runSend(c *cobra.Command, args []string) error {
 		}
 	}
 
-	// Add the file field.
-	part, err := writer.CreateFormFile("file", filepath.Base(filePath))
+	// Add the file field with the correct MIME type.
+	// We cannot use CreateFormFile because it hardcodes
+	// Content-Type: application/octet-stream. Notion rejects that
+	// when the upload was created with a specific content_type.
+	filename := filepath.Base(filePath)
+	contentType := ctOverride
+	if contentType == "" {
+		contentType = mime.TypeByExtension(filepath.Ext(filePath))
+	}
+	if contentType == "" {
+		contentType = "application/octet-stream"
+	}
+	partHeader := make(textproto.MIMEHeader)
+	partHeader.Set("Content-Disposition",
+		fmt.Sprintf(`form-data; name="file"; filename="%s"`, filename))
+	partHeader.Set("Content-Type", contentType)
+
+	part, err := writer.CreatePart(partHeader)
 	if err != nil {
-		return fmt.Errorf("create form file: %w", err)
+		return fmt.Errorf("create form file part: %w", err)
 	}
 	if _, err := part.Write(fileData); err != nil {
 		return fmt.Errorf("write file data: %w", err)
